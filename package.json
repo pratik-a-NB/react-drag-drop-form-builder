@@ -17,7 +17,10 @@
     "lodash": "^4.17.5",
     "popper.js": "^1.12.9",
     "react": "^16.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^16.2.0",
+    "react-drag-drop-form-builder": "^1.0.1",
     "react-scripts": "1.1.1"
   },
   "keywords": [
@@ -47,12 +50,12 @@
   },
   "homepage": "https://github.com/saravananangu/react-drag-drop-form-builder#readme",
   "devDependencies": {
-    "babel-preset-stage-2": "^6.24.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "css-loader": "^0.28.10",
     "style-loader": "^0.20.2",
     "url-loader": "^0.6.2",
