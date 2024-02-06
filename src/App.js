@@ -73,20 +73,42 @@ const fields = [
 class App extends Component {
   render() {
     return (
-      <DndProvider backend={HTML5Backend}>
-        <div style={{ display: "flex" }}>
-          <div style={{ flex: 1 }}>
-            <h2>Available Fields</h2>
-            {fields.map((field, index) => (
-              <Field key={field.id} fieldName={field.name} index={index} />
-            ))}
-          </div>
-          <div style={{ flex: 3 }}>
-            <h2>Custom Form</h2>
-            <DropBox />
+      <div>
+        <div className="App">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-7">
+                <FormContainer
+                  loader={false}
+                  debug={false}
+                  updateOnMount={true}
+                  updateForm={this.updateForm}
+                  onSave={this.myForm}
+                  custom={myCustoms}
+                />
+              </div>
+              <div className="col-md-5">
+                <ToolBox custom={myCustoms} />
+              </div>
+            </div>
           </div>
         </div>
-      </DndProvider>
+
+        <DndProvider backend={HTML5Backend}>
+          <div style={{ display: "flex" }}>
+            <div style={{ flex: 1 }}>
+              <h2>Available Fields</h2>
+              {fields.map((field, index) => (
+                <Field key={field.id} fieldName={field.name} index={index} />
+              ))}
+            </div>
+            <div style={{ flex: 3 }}>
+              <h2>Custom Form</h2>
+              <DropBox />
+            </div>
+          </div>
+        </DndProvider>
+      </div>
     );
   }
 

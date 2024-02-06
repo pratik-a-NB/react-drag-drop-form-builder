@@ -3,7 +3,8 @@ import DropArea from "./DropArea";
 import { useDrag } from "react-dnd";
 
 export default function Field() {
-  const Field = ({ Number: key, String: fieldName, Number: index }) => {
+  Field = ({ Number: key, String: fieldName, Number: index }) => {
+    console.log("iiiiiiiiiiiiii", key, index, fieldName);
     const [{ isDragging }, drag] = useDrag({
       type: "FIELD",
       item: { id: key, index },
