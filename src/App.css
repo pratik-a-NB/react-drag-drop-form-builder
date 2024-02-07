@@ -1,18 +1,18 @@
-.toolbox-list{
+.toolbox-list {
   max-height: 600px;
   overflow-x: hidden;
 }
 
-.App{
+.App {
   padding: 1em;
 }
 
-.singleField{
+.singleField {
   text-transform: capitalize;
   cursor: grabbing;
 }
 
-.singleField:hover{
+.singleField:hover {
   background: #ccc;
 }
 
@@ -21,18 +21,18 @@
   border-top-right-radius: 0 !important;
 }
 
-.dragActive{
+.dragActive {
   background: #ccc;
 }
 
-.single-field{
+.single-field {
   padding: 1ex;
   margin: 1ex;
   background: #eee;
   border-radius: 5px;
 }
 
-.cross{
+.cross {
   margin-right: 5px;
   margin-bottom: 5px;
   font-weight: bold;
@@ -42,11 +42,11 @@
   cursor: pointer;
 }
 
-.pull-right{
+.pull-right {
   float: right;
 }
 
-.setting{
+.setting {
   padding: 1em;
   background: #fff;
   border-radius: 8px;
@@ -54,6 +54,10 @@
   transition: all 2s;
 }
 
-.vertical-align-middle{
+.vertical-align-middle {
   vertical-align: middle;
+}
+
+.droprow {
+  display: flex;
 }

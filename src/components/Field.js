@@ -1,18 +1,33 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 
-export default function Field({ fieldName, index }) {
-  const [{ isDragging }, drag] = useDrag({
-    type: "FIELD",
-    item: { id: fieldName, index },
+const ToolBoxItemTypes = {
+  FIELD: "field",
+};
+
+const ToolboxItem = ({ id, name }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ToolBoxItemTypes.FIELD,
+    item: { id, name },
     collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+      isDragging: !!monitor.isDragging(),
     }),
-  });
+  }));
 
   return (
-    <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      {fieldName}
+    <div
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "move",
+        border: "1px dashed #000",
+        margin: "5px",
+        padding: "5px",
+      }}
+    >
+      {name}
     </div>
   );
-}
+};
+
+export default ToolboxItem;

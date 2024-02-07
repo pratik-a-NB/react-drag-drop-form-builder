@@ -77,6 +77,9 @@ class App extends Component {
         <div className="App">
           <div className="container">
             <div className="row">
+              <div className="col-md-5">
+                <ToolBox />
+              </div>
               <div className="col-md-7">
                 <FormContainer
                   loader={false}
@@ -86,9 +89,6 @@ class App extends Component {
                   onSave={this.myForm}
                   custom={myCustoms}
                 />
-              </div>
-              <div className="col-md-5">
-                <ToolBox custom={myCustoms} />
               </div>
             </div>
           </div>

@@ -5,31 +5,31 @@ let Tools = [
     name: "SINGLE_FIELD",
     icon: "fa fa-wpforms",
   },
-  {
-    title: "Drop Down",
-    name: "SELECT_FIELD",
-    icon: "fa fa-chevron-circle-down",
-  },
-  {
-    title: "Check Boxes",
-    name: "CHECK_BOXES",
-    icon: "fa fa-check-square",
-  },
-  {
-    title: "Radio Buttons",
-    name: "RADIO_BUTTONS",
-    icon: "fa fa-circle",
-  },
-  {
-    title: "Paragraph",
-    name: "PARAGRAPH",
-    icon: "fa fa-paragraph",
-  },
-  {
-    title: "Duration Picker",
-    name: "DURATION_PICKER",
-    icon: "fa fa-calendar",
-  },
+  // {
+  //   title: "Drop Down",
+  //   name: "SELECT_FIELD",
+  //   icon: "fa fa-chevron-circle-down",
+  // },
+  // {
+  //   title: "Check Boxes",
+  //   name: "CHECK_BOXES",
+  //   icon: "fa fa-check-square",
+  // },
+  // {
+  //   title: "Radio Buttons",
+  //   name: "RADIO_BUTTONS",
+  //   icon: "fa fa-circle",
+  // },
+  // {
+  //   title: "Paragraph",
+  //   name: "PARAGRAPH",
+  //   icon: "fa fa-paragraph",
+  // },
+  // {
+  //   title: "Duration Picker",
+  //   name: "DURATION_PICKER",
+  //   icon: "fa fa-calendar",
+  // },
 ];
 class ToolBox extends Component {
   render() {

@@ -136,16 +136,19 @@ class FormContainer extends Component {
                   return this.renderToolBoxItems(field, index);
                 })
               ) : (
-                <div>
+                <div
+                  style={{
+                    display: "flex",
+                    "justify-content": 5,
+                    "align-items": "center",
+                  }}
+                >
                   <p
                     style={{
-                      textAlign: "center",
-                      padding: "2em",
-                      fontSize: "18pt",
-                      fontWeight: "bold",
-                      textTransform: "uppercase",
-                      color: "#aaa",
-                      backgroundColor: "#eee",
+                      flex: 1,
+                      padding: " 20px",
+                      border: "1px solid #ccc",
+                      margin: "0 10px",
                     }}
                   >
                     Drag a Field
