@@ -74,7 +74,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <div className="App">
+        {/* <div className="App">
           <div className="container">
             <div className="row">
               <div className="col-md-5">
@@ -92,17 +92,11 @@ class App extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <DndProvider backend={HTML5Backend}>
-          <div style={{ display: "flex" }}>
-            <div style={{ flex: 1 }}>
-              <h2>Available Fields</h2>
-              {fields.map((field, index) => (
-                <Field key={field.id} fieldName={field.name} index={index} />
-              ))}
-            </div>
-            <div style={{ flex: 3 }}>
+          <div>
+            <div>
               <h2>Custom Form</h2>
               <DropBox />
             </div>
