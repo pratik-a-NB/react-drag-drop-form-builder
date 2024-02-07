@@ -96,24 +96,34 @@
   display: flex;
 }
 
-.container {
+.container-fluid {
   height: 100%;
-  width: 100%;
-  margin: 0 auto;
+  width: 100vw;
+  margin: 0;
   padding: 0;
   display: flex;
   justify-content: space-evenly;
+  gap: 16px;
 }
 
+.col-container {
+  display: flex;
+}
+.pending col {
+  flex: 1;
+  height: 100%;
+}
 .left-div {
-  width: 30%;
+  width: 20%;
   background: #f7f8fa;
   height: max-content;
+  padding: 16px 0;
 }
 .right-div {
-  width: 100%;
+  width: 80%;
   background: #f7f8fa;
   height: max-content;
+  padding: 16px 0;
 }
 
 .col {

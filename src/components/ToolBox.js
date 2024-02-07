@@ -45,7 +45,7 @@ class ToolBox extends Component {
                     data-tool={types.name}
                     onDragStart={(e) => this.dragField(e, types.name)}
                     key={types.name}
-                    className="list-group-item singleField"
+                    className="list-group-item singleField w-100"
                   >
                     <i className={types.icon + " mr-3"}></i>
                     {types.title}
@@ -68,7 +68,7 @@ class ToolBox extends Component {
             data-tool={types.toolbox.name}
             onDragStart={(e) => this.dragField(e, types.toolbox.name)}
             key={types.toolbox.name}
-            className="list-group-item singleField"
+            className="list-group-item singleField w-100"
           >
             <i className={types.toolbox.icon + " mr-3"} />
             {types.toolbox.title}

@@ -2,9 +2,47 @@ import React from "react";
 import SingleField from "./Types/SingleField";
 
 class TaskList extends React.Component {
-  state = {
-    fields: [
-      {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fields: [
+        {
+          id: 1,
+          status: "New Order",
+          time: "8 hrs",
+          days: "5 days left",
+          state: {
+            tab: "",
+            title: "",
+            type: "Text",
+            name: "",
+            toolType: "SINGLE_FIELD",
+            defaultValue: "",
+            placeholder: "",
+            description: "",
+            validation: {
+              isReadOnly: false,
+              isRequired: false,
+              min: 6,
+              max: 6,
+            },
+          },
+          cellrow: 1,
+          cellcoll: 1,
+        },
+
+        // {
+        //   id: 5,
+        //   status: "Delivered",
+
+        //   time: "2 hrs",
+        //   days: "1 day left",
+        //   done: false,
+        //   cellrow: 1,
+        //   cellcoll: 1,
+        // },
+      ],
+      emptydata: {
         id: 1,
         status: "New Order",
         time: "8 hrs",
@@ -28,92 +66,9 @@ class TaskList extends React.Component {
         cellrow: 1,
         cellcoll: 1,
       },
-      // {
-      //   id: 2,
-      //   status: "In Progress",
-      //   time: "6 hrs",
-      //   days: "6 days left",
-      //   done: false,
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-      // {
-      //   id: 3,
-      //   status: "Completed",
-
-      //   time: "13 hrs",
-      //   days: "4 days left",
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-      // {
-      //   id: 4,
-      //   status: "New Order",
-
-      //   time: "22 hrs",
-      //   days: "2 days left",
-      //   done: true,
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-      // {
-      //   id: 5,
-      //   status: "In Progress",
-
-      //   time: "2 hrs",
-      //   days: "1 day left",
-      //   newOrder: true,
-      //   done: false,
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-      // {
-      //   id: 6,
-      //   status: "Completed",
-
-      //   time: "20 hrs",
-      //   days: "11 days left",
-      //   done: true,
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-      // {
-      //   id: 5,
-      //   status: "Delivered",
-
-      //   time: "2 hrs",
-      //   days: "1 day left",
-      //   done: false,
-      //   cellrow: 1,
-      //   cellcoll: 1,
-      // },
-    ],
-    emptydata: {
-      id: 1,
-      status: "New Order",
-      time: "8 hrs",
-      days: "5 days left",
-      state: {
-        tab: "",
-        title: "",
-        type: "Text",
-        name: "",
-        toolType: "SINGLE_FIELD",
-        defaultValue: "",
-        placeholder: "",
-        description: "",
-        validation: {
-          isReadOnly: false,
-          isRequired: false,
-          min: 6,
-          max: 6,
-        },
-      },
-      cellrow: 1,
-      cellcoll: 1,
-    },
-    storedfields: [[], [], []],
-  };
+      storedfields: [[], [], []],
+    };
+  }
 
   onDragStart = (evt) => {
     let element = evt.currentTarget;
@@ -157,18 +112,36 @@ class TaskList extends React.Component {
     let emptydata = this.state.emptydata;
 
     console.log("data", data, status);
-    let updatedStoredFields = emptydata;
+    let updatedStoredFields = { ...emptydata };
+
     updatedStoredFields.cellrow = status[0];
     updatedStoredFields.cellcoll = status[1];
+    console.log("not stored yet", storedfields);
 
+    //console.log("new cc cr ", updatedStoredFields);
     storedfields[status[1] - 1].push(updatedStoredFields);
-
+    console.log("before saving", updatedStoredFields, storedfields);
     this.setState({ storedfields: storedfields });
 
     let updated = fields.map((field) => {
       return field;
     });
     this.setState({ fields: updated });
+  };
+
+  removestoredfield = (row, col) => {
+    console.log(row, col);
+    const { storedfields } = this.state;
+
+    let filteredItems = storedfields[col].filter(
+      (item) => item.cellrow !== row
+    );
+    console.log(filteredItems);
+    let newData = storedfields;
+    newData[col] = filteredItems;
+    console.log(newData);
+
+    this.setState({ storedfields: newData });
   };
 
   render() {
@@ -185,7 +158,7 @@ class TaskList extends React.Component {
     let waiting = fields.filter((data) => data.status === "Delivered");
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="left-div">
           <div
             className="order small-box"
@@ -221,7 +194,7 @@ class TaskList extends React.Component {
                                 <li
                                   data-tool="SINGLE_FIELD"
                                   key="SINGLE_FIELD"
-                                  className="list-group-item singleField"
+                                  className="list-group-item singleField w-100"
                                   id={field.id}
                                   draggable
                                   onDragStart={(e) => this.onDragStart(e)}
@@ -243,7 +216,7 @@ class TaskList extends React.Component {
           </div>
         </div>
         <div className="right-div">
-          <div className="container">
+          <div className="col-container">
             <div
               className="pending col"
               onDragLeave={(e) => this.onDragLeave(e)}
@@ -278,7 +251,9 @@ class TaskList extends React.Component {
                               field={field}
                               index={index}
                               key={index}
-                              //removeField={() => removestoredfield(index, 1)}
+                              removeField={() =>
+                                this.removestoredfield(index, 0)
+                              }
                             />
                           </div>
                         </div>
@@ -322,7 +297,9 @@ class TaskList extends React.Component {
                               field={field}
                               index={index}
                               key={index}
-                              removeField={() => this.remove(index)}
+                              removeField={() =>
+                                this.removestoredfield(index, 1)
+                              }
                             />
                           </div>
                         </div>
@@ -366,7 +343,9 @@ class TaskList extends React.Component {
                               field={field}
                               index={index}
                               key={index}
-                              removeField={() => this.remove(index)}
+                              removeField={() =>
+                                this.removestoredfield(index, 2)
+                              }
                             />
                           </div>
                         </div>

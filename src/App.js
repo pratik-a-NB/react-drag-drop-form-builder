@@ -98,7 +98,9 @@ class App extends Component {
           <div>
             <div>
               <h2>Custom Form</h2>
-              <DropBox />
+              <div>
+                <DropBox />
+              </div>
             </div>
           </div>
         </DndProvider>
