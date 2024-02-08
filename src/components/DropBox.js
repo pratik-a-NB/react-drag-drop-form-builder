@@ -16,6 +16,8 @@ class TaskList extends React.Component {
             title: "",
             type: "Text",
             name: "",
+            value: "",
+
             toolType: "SINGLE_FIELD",
             defaultValue: "",
             placeholder: "",
@@ -44,14 +46,13 @@ class TaskList extends React.Component {
       ],
       emptydata: {
         id: 1,
-        status: "New Order",
-        time: "8 hrs",
-        days: "5 days left",
+
         state: {
           tab: "",
           title: "",
           type: "Text",
           name: "",
+          value: "",
           toolType: "SINGLE_FIELD",
           defaultValue: "",
           placeholder: "",
@@ -66,7 +67,24 @@ class TaskList extends React.Component {
         cellrow: 1,
         cellcoll: 1,
       },
-      storedfields: [[], [], []],
+      storedfields: [[{ v: "0" }], [{ v: "0" }], [{ v: "0" }]],
+      tools: [
+        {
+          title: "Single Field",
+          name: "SINGLE_FIELD",
+          icon: "fa fa-wpforms",
+        },
+        {
+          title: "Single Field",
+          name: "SELECT_FIELD",
+          icon: "fa fa-wpforms",
+        },
+        {
+          title: "Single Field",
+          name: "SELECT_FIELD",
+          icon: "fa fa-wpforms",
+        },
+      ],
     };
   }
 
@@ -99,6 +117,17 @@ class TaskList extends React.Component {
     evt.dataTransfer.dropEffect = "move";
   };
 
+  // input in the single field
+  changeChildState = (evt, index, col) => {
+    let dummystoredfields = this.state.storedfields;
+
+    dummystoredfields[col][index].state.value = evt.name;
+    console.log("changechildstate", dummystoredfields);
+    this.setState({
+      storedfields: dummystoredfields,
+    });
+  };
+
   // droped fields gets saved here
   onDrop = (evt, value, status) => {
     if (status[0] === 0 && status[1] === 0) {
@@ -111,6 +140,10 @@ class TaskList extends React.Component {
     let storedfields = this.state.storedfields;
     let emptydata = this.state.emptydata;
 
+    let l1 = storedfields[0].length;
+    let l2 = storedfields[1].length;
+    let l3 = storedfields[2].length;
+
     console.log("data", data, status);
     let updatedStoredFields = { ...emptydata };
 
@@ -119,7 +152,21 @@ class TaskList extends React.Component {
     console.log("not stored yet", storedfields);
 
     //console.log("new cc cr ", updatedStoredFields);
-    storedfields[status[1] - 1].push(updatedStoredFields);
+    //storedfields[status[1] - 1].push(updatedStoredFields);
+    if (storedfields[status[1] - 1][status[0] - 1].v === "0") {
+      console.log("before", storedfields);
+      storedfields[status[1] - 1].splice(status[0] - 1, 1, updatedStoredFields);
+      console.log("after", storedfields);
+      console.log("check index", storedfields, status[0]);
+      if (storedfields[status[1] - 1].length === status[0]) {
+        storedfields[0].push({ v: "0" });
+        storedfields[1].push({ v: "0" });
+        storedfields[2].push({ v: "0" });
+      }
+    } else {
+      storedfields[status[1] - 1].splice(status[0] - 1, 0, updatedStoredFields);
+    }
+
     console.log("before saving", updatedStoredFields, storedfields);
     this.setState({ storedfields: storedfields });
 
@@ -133,9 +180,13 @@ class TaskList extends React.Component {
     console.log(row, col);
     const { storedfields } = this.state;
 
-    let filteredItems = storedfields[col].filter(
-      (item) => item.cellrow !== row
-    );
+    let filteredItems = storedfields[col].filter((item) => {
+      console.log(item.cellrow, row + 1);
+      return item.cellrow !== row + 1;
+    });
+
+    filteredItems.splice(row, 0, { v: "0" });
+
     console.log(filteredItems);
     let newData = storedfields;
     newData[col] = filteredItems;
@@ -147,6 +198,7 @@ class TaskList extends React.Component {
   render() {
     const { fields } = this.state;
     const { storedfields } = this.state;
+    const { tools } = this.state;
     console.log("fields", fields);
     let pending = fields.filter((data) => data.status === "In Progress");
     let datacol1 = storedfields[0];
@@ -190,7 +242,7 @@ class TaskList extends React.Component {
                               // onDragStart={(e) => this.onDragStart(e)}
                               // onDragEnd={(e) => this.onDragEnd(e)}
                             >
-                              {newOrder.map((field) => (
+                              {tools.map((field) => (
                                 <li
                                   data-tool="SINGLE_FIELD"
                                   key="SINGLE_FIELD"
@@ -217,14 +269,7 @@ class TaskList extends React.Component {
         </div>
         <div className="right-div">
           <div className="col-container">
-            <div
-              className="pending col"
-              onDragLeave={(e) => this.onDragLeave(e)}
-              onDragEnter={(e) => this.onDragEnter(e)}
-              onDragEnd={(e) => this.onDragEnd(e)}
-              onDragOver={(e) => this.onDragOver(e)}
-              onDrop={(e) => this.onDrop(e, false, [1, 1])}
-            >
+            <div className="pending col">
               <section className="drag_container">
                 <div className="container">
                   <div className="drag_column">
@@ -232,30 +277,52 @@ class TaskList extends React.Component {
                       <h4>col 1</h4>
                       {/* <button style={{ width: "100%" }}>+</button> */}
                       {datacol1.map((field, index) => (
-                        <div
-                          className="card"
-                          key={field.name}
-                          id={field.id}
-                          draggable
-                          onDragStart={(e) => this.onDragStart(e)}
-                          onDragEnd={(e) => this.onDragEnd(e)}
-                        >
-                          <div className="img">
-                            {/* <img src={field.image} alt="box" /> */}
-                          </div>
-                          <div className="card_right">
-                            <SingleField
-                              changeState={(e, index) =>
-                                this.changeChildState(e, index)
+                        <div>
+                          {field.v === "0" ? (
+                            <div
+                              onDragLeave={(e) => this.onDragLeave(e)}
+                              onDragEnter={(e) => this.onDragEnter(e)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                              onDragOver={(e) => this.onDragOver(e)}
+                              onDrop={(e) =>
+                                this.onDrop(e, false, [index + 1, 1])
                               }
-                              field={field}
-                              index={index}
-                              key={index}
-                              removeField={() =>
-                                this.removestoredfield(index, 0)
-                              }
-                            />
-                          </div>
+                            >
+                              <p
+                                style={{
+                                  textAlign: "center",
+                                  padding: "2em",
+                                  fontSize: "21pt",
+                                  fontWeight: "bold",
+                                  textTransform: "uppercase",
+                                  color: "#aaa",
+                                  backgroundColor: "#eee",
+                                }}
+                              >
+                                Drop a Field
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="card" key={index}>
+                              <div className="img">
+                                {/* <img src={field.image} alt="box" /> */}
+                              </div>
+                              <div className="card_right">
+                                <SingleField
+                                  changeState={(e, index) => {
+                                    console.log("value of e", e);
+                                    this.changeChildState(e, index, 0);
+                                  }}
+                                  field={field}
+                                  index={index}
+                                  key={index}
+                                  removeField={() =>
+                                    this.removestoredfield(index, 0)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -263,14 +330,7 @@ class TaskList extends React.Component {
                 </div>
               </section>
             </div>
-            <div
-              className="pending col"
-              onDragLeave={(e) => this.onDragLeave(e)}
-              onDragEnter={(e) => this.onDragEnter(e)}
-              onDragEnd={(e) => this.onDragEnd(e)}
-              onDragOver={(e) => this.onDragOver(e)}
-              onDrop={(e) => this.onDrop(e, false, [1, 2])}
-            >
+            <div className="pending col">
               <section className="drag_container">
                 <div className="container">
                   <div className="drag_column">
@@ -278,30 +338,59 @@ class TaskList extends React.Component {
                       <h4>col 2</h4>
                       {/* <button style={{ width: "100%" }}>+</button> */}
                       {datacol2.map((field, index) => (
-                        <div
-                          className="card"
-                          key={field.name}
-                          id={field.id}
-                          draggable
-                          onDragStart={(e) => this.onDragStart(e)}
-                          onDragEnd={(e) => this.onDragEnd(e)}
-                        >
-                          <div className="img">
-                            {/* <img src={field.image} alt="box" /> */}
-                          </div>
-                          <div className="card_right">
-                            <SingleField
-                              changeState={(e, index) =>
-                                this.changeChildState(e, index)
+                        <div>
+                          {field.v === "0" ? (
+                            <div
+                              onDragLeave={(e) => this.onDragLeave(e)}
+                              onDragEnter={(e) => this.onDragEnter(e)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                              onDragOver={(e) => this.onDragOver(e)}
+                              onDrop={(e) =>
+                                this.onDrop(e, false, [index + 1, 2])
                               }
-                              field={field}
-                              index={index}
+                            >
+                              <p
+                                style={{
+                                  textAlign: "center",
+                                  padding: "2em",
+                                  fontSize: "21pt",
+                                  fontWeight: "bold",
+                                  textTransform: "uppercase",
+                                  color: "#aaa",
+                                  backgroundColor: "#eee",
+                                }}
+                              >
+                                Drop a Field
+                              </p>
+                            </div>
+                          ) : (
+                            <div
+                              className="card"
                               key={index}
-                              removeField={() =>
-                                this.removestoredfield(index, 1)
-                              }
-                            />
-                          </div>
+                              id={field.id}
+                              draggable
+                              onDragStart={(e) => this.onDragStart(e)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                            >
+                              <div className="img">
+                                {/* <img src={field.image} alt="box" /> */}
+                              </div>
+                              <div className="card_right">
+                                <SingleField
+                                  changeState={(e, index) => {
+                                    console.log("value of e", e);
+                                    this.changeChildState(e, index, 1);
+                                  }}
+                                  field={field}
+                                  index={index}
+                                  key={index}
+                                  removeField={() =>
+                                    this.removestoredfield(index, 1)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -309,14 +398,7 @@ class TaskList extends React.Component {
                 </div>
               </section>
             </div>
-            <div
-              className="pending col"
-              onDragLeave={(e) => this.onDragLeave(e)}
-              onDragEnter={(e) => this.onDragEnter(e)}
-              onDragEnd={(e) => this.onDragEnd(e)}
-              onDragOver={(e) => this.onDragOver(e)}
-              onDrop={(e) => this.onDrop(e, false, [1, 3])}
-            >
+            <div className="pending col">
               <section className="drag_container">
                 <div className="container">
                   <div className="drag_column">
@@ -324,30 +406,59 @@ class TaskList extends React.Component {
                       <h4>col 3</h4>
                       {/* <button style={{ width: "100%" }}>+</button> */}
                       {datacol3.map((field, index) => (
-                        <div
-                          className="card"
-                          key={field.name}
-                          id={field.id}
-                          draggable
-                          onDragStart={(e) => this.onDragStart(e)}
-                          onDragEnd={(e) => this.onDragEnd(e)}
-                        >
-                          <div className="img">
-                            {/* <img src={field.image} alt="box" /> */}
-                          </div>
-                          <div className="card_right">
-                            <SingleField
-                              changeState={(e, index) =>
-                                this.changeChildState(e, index)
+                        <div>
+                          {field.v === "0" ? (
+                            <div
+                              onDragLeave={(e) => this.onDragLeave(e)}
+                              onDragEnter={(e) => this.onDragEnter(e)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                              onDragOver={(e) => this.onDragOver(e)}
+                              onDrop={(e) =>
+                                this.onDrop(e, false, [index + 1, 3])
                               }
-                              field={field}
-                              index={index}
+                            >
+                              <p
+                                style={{
+                                  textAlign: "center",
+                                  padding: "2em",
+                                  fontSize: "21pt",
+                                  fontWeight: "bold",
+                                  textTransform: "uppercase",
+                                  color: "#aaa",
+                                  backgroundColor: "#eee",
+                                }}
+                              >
+                                Drop a Field
+                              </p>
+                            </div>
+                          ) : (
+                            <div
+                              className="card"
                               key={index}
-                              removeField={() =>
-                                this.removestoredfield(index, 2)
-                              }
-                            />
-                          </div>
+                              id={field.id}
+                              draggable
+                              onDragStart={(e) => this.onDragStart(e)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                            >
+                              <div className="img">
+                                {/* <img src={field.image} alt="box" /> */}
+                              </div>
+                              <div className="card_right">
+                                <SingleField
+                                  changeState={(e, index) => {
+                                    console.log("value of e", e);
+                                    this.changeChildState(e, index, 2);
+                                  }}
+                                  field={field}
+                                  index={index}
+                                  key={index}
+                                  removeField={() =>
+                                    this.removestoredfield(index, 2)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

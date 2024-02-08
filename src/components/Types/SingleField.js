@@ -64,22 +64,22 @@ class SingleField extends Component {
       case "DEFAULT_VALUE":
         this.setState({ defaultValue: value });
         break;
-      case "IS_REQUIRED":
-        this.setState({
-          validation: { ...this.state.validation, isRequired: value },
-        });
-        break;
-      case "IS_READONLY":
-        this.setState({
-          validation: { ...this.state.validation, isReadOnly: value },
-        });
-        break;
-      case "MAX":
-        this.setState({ validation: { ...this.state.validation, max: value } });
-        break;
-      case "MIN":
-        this.setState({ validation: { ...this.state.validation, min: value } });
-        break;
+      //   case "IS_REQUIRED":
+      //     this.setState({
+      //       validation: { ...this.state.validation, isRequired: value },
+      //     });
+      //     break;
+      //   case "IS_READONLY":
+      //     this.setState({
+      //       validation: { ...this.state.validation, isReadOnly: value },
+      //     });
+      //     break;
+      //   case "MAX":
+      //     this.setState({ validation: { ...this.state.validation, max: value } });
+      //     break;
+      //   case "MIN":
+      //     this.setState({ validation: { ...this.state.validation, min: value } });
+      //     break;
       default:
         return;
     }
@@ -101,7 +101,7 @@ class SingleField extends Component {
           </span>
         </div>
         <div className="card-body">
-          <ul className="nav nav-tabs">
+          {/* <ul className="nav nav-tabs">
             <li className="nav-item">
               <a
                 onClick={(e) => {
@@ -132,6 +132,7 @@ class SingleField extends Component {
                 Validation
               </a>
             </li>
+
             <li
               className="nav-item"
               style={{
@@ -155,8 +156,20 @@ class SingleField extends Component {
                 -
               </a>
             </li>
-          </ul>
-          <div hidden={this.state.tab !== "general"} className="general">
+          </ul> */}
+          <div className="col-12">
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                value={this.state.name}
+                onChange={(e) => this.changeValue("NAME", e.target.value)}
+                placeholder="Name"
+                className="form-control"
+              />
+            </div>
+          </div>
+          {/* <div hidden={this.state.tab !== "general"} className="general">
             <div className="card-body">
               <div className="row">
                 <div className="col-12">
@@ -319,7 +332,7 @@ class SingleField extends Component {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="card-footer"></div>
       </div>
