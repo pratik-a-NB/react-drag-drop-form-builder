@@ -92,7 +92,7 @@ class SingleField extends Component {
     return (
       <div className="card card-outline-primary">
         <div className="card-header">
-          <i className="fa fa-wpforms mr-1"></i> Single Field {this.state.title}
+          <i className="fa fa-wpforms mr-1"></i> {this.props.field.tool.title}
           <span
             className="pull-right cross"
             onClick={() => this.props.removeField(this.props.index)}
@@ -160,17 +160,6 @@ class SingleField extends Component {
           <div className="col-12">
             <div className="form-group">
               <label htmlFor="name"></label>
-              <input
-                type="text"
-                value={this.state.name}
-                onChange={(e) => {
-                  console.log("hii", e.target.value);
-                  this.props.changeState(e.target.value, this.props.index);
-                  this.changeValue("NAME", e.target.value);
-                }}
-                //placeholder={this.props.field.state.placeholder}
-                className="form-control"
-              />
             </div>
           </div>
           {/* <div hidden={this.state.tab !== "general"} className="general">

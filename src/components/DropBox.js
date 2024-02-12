@@ -70,9 +70,25 @@ class TaskList extends React.Component {
       storedfields: [[{ v: "0" }], [{ v: "0" }], [{ v: "0" }]],
       tools: [
         {
-          title: "Single Field",
-          name: "SINGLE_FIELD",
+          id: 1,
+          title: "ID",
+          data: "1001",
           icon: "fa fa-wpforms",
+          isdropped: false,
+        },
+        {
+          id: 2,
+          title: "Name",
+          data: "Pratik",
+          icon: "fa fa-wpforms",
+          isdropped: false,
+        },
+        {
+          id: 3,
+          title: "Time",
+          data: "11 am",
+          icon: "fa fa-wpforms",
+          isdropped: false,
         },
         // {
         //   title: "Single Field",
@@ -85,11 +101,11 @@ class TaskList extends React.Component {
         //   icon: "fa fa-wpforms",
         // },
       ],
-      dragstart: [-1, -1],
+      dragstart: [-1, -1, -1],
     };
   }
 
-  onDragStart = (evt, row = -1, col = -1) => {
+  onDragStart = (evt, row = -1, col = -1, id = -1) => {
     let dummydragstart = this.state.dragstart;
 
     console.log("pick up", evt);
@@ -100,6 +116,8 @@ class TaskList extends React.Component {
     evt.dataTransfer.effectAllowed = "move";
     dummydragstart[0] = row;
     dummydragstart[1] = col;
+    dummydragstart[2] = id;
+
     console.log("drag started from ", dummydragstart);
 
     this.setState({
@@ -151,8 +169,13 @@ class TaskList extends React.Component {
     let data = evt.dataTransfer.getData("text/plain");
     let fields = this.state.fields; //update storedfields here
     let storedfields = this.state.storedfields;
+    let tools = this.state.tools;
+    let updatedTools = this.state.tools;
     let dummydragstart = this.state.dragstart;
     let emptydata = this.state.emptydata;
+
+    let currentTool = tools.find((obj) => obj.id === dummydragstart[2]);
+
     console.log(storedfields);
 
     let l1 = storedfields[0].length;
@@ -161,6 +184,7 @@ class TaskList extends React.Component {
 
     console.log("data", data, status);
     let updatedStoredFields = { ...emptydata };
+    // drag and drop from one cell to another
     if (dummydragstart[0] !== -1) {
       console.log("draged field within ", dummydragstart, storedfields);
       let temp = storedfields[dummydragstart[1] - 1][dummydragstart[0]];
@@ -168,10 +192,26 @@ class TaskList extends React.Component {
       console.log(storedfields[0][0]);
       console.log(storedfields);
       updatedStoredFields = { ...temp };
-      this.removestoredfield(dummydragstart[0], dummydragstart[1] - 1);
+      this.removestoredfield(dummydragstart[0], dummydragstart[1] - 1, -1);
     }
+
     updatedStoredFields.cellrow = status[0];
     updatedStoredFields.cellcoll = status[1];
+    if (dummydragstart[2] !== -1) {
+      updatedStoredFields.tool = currentTool;
+
+      const currentToolIndex = tools.findIndex(
+        (item) => item.id === dummydragstart[2]
+      );
+
+      if (currentToolIndex !== -1) {
+        // Update the quantity of the specific item
+        updatedTools[currentToolIndex].isdropped = true;
+        console.log(updatedTools);
+        // Update the state with the new array of items
+        this.setState({ tools: updatedTools });
+      }
+    }
     console.log("not stored yet", storedfields, updatedStoredFields);
 
     //console.log("new cc cr ", updatedStoredFields);
@@ -199,18 +239,32 @@ class TaskList extends React.Component {
     this.setState({ fields: updated });
 
     this.setState({
-      dragstart: [-1, -1],
+      dragstart: [-1, -1, -1],
     });
   };
 
-  removestoredfield = (row, col) => {
-    console.log(row, col);
+  removestoredfield = (row, col, toolid = -1) => {
+    console.log(row, col, toolid);
     const { storedfields } = this.state;
+    const { tools } = this.state;
+    let updatedTools = this.state.tools;
+    let currentTool = tools.find((obj) => obj.id === toolid);
+    const currentToolIndex = tools.findIndex((item) => item.id === toolid);
+
     console.log(storedfields);
+    console.log(tools);
     let filteredItems = storedfields[col].filter((item) => {
       console.log(item.cellrow, row + 1);
       return item.cellrow !== row + 1;
     });
+
+    if (toolid !== -1 && currentToolIndex !== -1) {
+      // Update the quantity of the specific item
+      updatedTools[currentToolIndex].isdropped = false;
+      console.log(updatedTools);
+      // Update the state with the new array of items
+      this.setState({ tools: updatedTools });
+    }
 
     filteredItems.splice(row, 0, { v: "0" });
 
@@ -226,7 +280,9 @@ class TaskList extends React.Component {
     const { fields } = this.state;
     const { storedfields } = this.state;
     const { tools } = this.state;
-    console.log("fields", fields);
+    let availableTools = tools.filter((tool) => tool.isdropped === false);
+
+    console.log("fields", fields, availableTools, tools);
     let pending = fields.filter((data) => data.status === "In Progress");
     let datacol1 = storedfields[0];
     let datacol2 = storedfields[1];
@@ -269,18 +325,20 @@ class TaskList extends React.Component {
                               // onDragStart={(e) => this.onDragStart(e)}
                               // onDragEnd={(e) => this.onDragEnd(e)}
                             >
-                              {tools.map((field) => (
+                              {availableTools.map((field, index) => (
                                 <li
                                   data-tool="SINGLE_FIELD"
-                                  key="SINGLE_FIELD"
+                                  key={index}
                                   className="list-group-item singleField w-100"
                                   id={field.id}
                                   draggable
-                                  onDragStart={(e) => this.onDragStart(e)}
+                                  onDragStart={(e) =>
+                                    this.onDragStart(e, -1, -1, field.id)
+                                  }
                                   onDragEnd={(e) => this.onDragEnd(e)}
                                 >
                                   <i className={"fa fa-wpforms" + " mr-3"}></i>
-                                  Single Field{" "}
+                                  {field.title}
                                 </li>
                               ))}
                             </div>
@@ -337,7 +395,9 @@ class TaskList extends React.Component {
                               key={index}
                               id={field.id}
                               draggable
-                              onDragStart={(e) => this.onDragStart(e, index, 1)}
+                              onDragStart={(e) =>
+                                this.onDragStart(e, index, 1, -1)
+                              }
                               onDragEnd={(e) => this.onDragEnd(e)}
                               style={{ marginTop: "16px" }}
                             >
@@ -354,7 +414,11 @@ class TaskList extends React.Component {
                                   index={index}
                                   key={index}
                                   removeField={() =>
-                                    this.removestoredfield(index, 0)
+                                    this.removestoredfield(
+                                      index,
+                                      0,
+                                      field.tool.id
+                                    )
                                   }
                                 />
                               </div>
@@ -409,7 +473,9 @@ class TaskList extends React.Component {
                               key={index}
                               id={field.id}
                               draggable
-                              onDragStart={(e) => this.onDragStart(e, index, 2)}
+                              onDragStart={(e) =>
+                                this.onDragStart(e, index, 2, -1)
+                              }
                               onDragEnd={(e) => this.onDragEnd(e)}
                               style={{ marginTop: "16px" }}
                             >
@@ -426,7 +492,11 @@ class TaskList extends React.Component {
                                   index={index}
                                   key={index}
                                   removeField={() =>
-                                    this.removestoredfield(index, 1)
+                                    this.removestoredfield(
+                                      index,
+                                      1,
+                                      field.tool.id
+                                    )
                                   }
                                 />
                               </div>
@@ -481,7 +551,9 @@ class TaskList extends React.Component {
                               key={index}
                               id={field.id}
                               draggable
-                              onDragStart={(e) => this.onDragStart(e, index, 3)}
+                              onDragStart={(e) =>
+                                this.onDragStart(e, index, 3, -1)
+                              }
                               onDragEnd={(e) => this.onDragEnd(e)}
                               style={{ marginTop: "16px" }}
                             >
@@ -498,7 +570,11 @@ class TaskList extends React.Component {
                                   index={index}
                                   key={index}
                                   removeField={() =>
-                                    this.removestoredfield(index, 2)
+                                    this.removestoredfield(
+                                      index,
+                                      2,
+                                      field.tool.id
+                                    )
                                   }
                                 />
                               </div>
