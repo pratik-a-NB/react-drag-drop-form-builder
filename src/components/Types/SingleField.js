@@ -159,12 +159,16 @@ class SingleField extends Component {
           </ul> */}
           <div className="col-12">
             <div className="form-group">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="name"></label>
               <input
                 type="text"
                 value={this.state.name}
-                onChange={(e) => this.changeValue("NAME", e.target.value)}
-                placeholder="Name"
+                onChange={(e) => {
+                  console.log("hii", e.target.value);
+                  this.props.changeState(e.target.value, this.props.index);
+                  this.changeValue("NAME", e.target.value);
+                }}
+                //placeholder={this.props.field.state.placeholder}
                 className="form-control"
               />
             </div>

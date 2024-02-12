@@ -74,25 +74,37 @@ class TaskList extends React.Component {
           name: "SINGLE_FIELD",
           icon: "fa fa-wpforms",
         },
-        {
-          title: "Single Field",
-          name: "SELECT_FIELD",
-          icon: "fa fa-wpforms",
-        },
-        {
-          title: "Single Field",
-          name: "SELECT_FIELD",
-          icon: "fa fa-wpforms",
-        },
+        // {
+        //   title: "Single Field",
+        //   name: "SELECT_FIELD",
+        //   icon: "fa fa-wpforms",
+        // },
+        // {
+        //   title: "Single Field",
+        //   name: "SELECT_FIELD",
+        //   icon: "fa fa-wpforms",
+        // },
       ],
+      dragstart: [-1, -1],
     };
   }
 
-  onDragStart = (evt) => {
+  onDragStart = (evt, row = -1, col = -1) => {
+    let dummydragstart = this.state.dragstart;
+
+    console.log("pick up", evt);
+
     let element = evt.currentTarget;
     element.classList.add("dragged");
     evt.dataTransfer.setData("text/plain", evt.currentTarget.id);
     evt.dataTransfer.effectAllowed = "move";
+    dummydragstart[0] = row;
+    dummydragstart[1] = col;
+    console.log("drag started from ", dummydragstart);
+
+    this.setState({
+      dragstart: dummydragstart,
+    });
   };
   onDragEnd = (evt) => {
     evt.currentTarget.classList.remove("dragged");
@@ -118,10 +130,10 @@ class TaskList extends React.Component {
   };
 
   // input in the single field
-  changeChildState = (evt, index, col) => {
+  changeChildState = (evalue, index, col) => {
     let dummystoredfields = this.state.storedfields;
-
-    dummystoredfields[col][index].state.value = evt.name;
+    console.log("value of eval 2", evalue);
+    dummystoredfields[col][index].state.value = evalue;
     console.log("changechildstate", dummystoredfields);
     this.setState({
       storedfields: dummystoredfields,
@@ -133,12 +145,15 @@ class TaskList extends React.Component {
     if (status[0] === 0 && status[1] === 0) {
       return;
     }
+
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let data = evt.dataTransfer.getData("text/plain");
     let fields = this.state.fields; //update storedfields here
     let storedfields = this.state.storedfields;
+    let dummydragstart = this.state.dragstart;
     let emptydata = this.state.emptydata;
+    console.log(storedfields);
 
     let l1 = storedfields[0].length;
     let l2 = storedfields[1].length;
@@ -146,10 +161,18 @@ class TaskList extends React.Component {
 
     console.log("data", data, status);
     let updatedStoredFields = { ...emptydata };
-
+    if (dummydragstart[0] !== -1) {
+      console.log("draged field within ", dummydragstart, storedfields);
+      let temp = storedfields[dummydragstart[1] - 1][dummydragstart[0]];
+      console.log(temp);
+      console.log(storedfields[0][0]);
+      console.log(storedfields);
+      updatedStoredFields = { ...temp };
+      this.removestoredfield(dummydragstart[0], dummydragstart[1] - 1);
+    }
     updatedStoredFields.cellrow = status[0];
     updatedStoredFields.cellcoll = status[1];
-    console.log("not stored yet", storedfields);
+    console.log("not stored yet", storedfields, updatedStoredFields);
 
     //console.log("new cc cr ", updatedStoredFields);
     //storedfields[status[1] - 1].push(updatedStoredFields);
@@ -174,12 +197,16 @@ class TaskList extends React.Component {
       return field;
     });
     this.setState({ fields: updated });
+
+    this.setState({
+      dragstart: [-1, -1],
+    });
   };
 
   removestoredfield = (row, col) => {
     console.log(row, col);
     const { storedfields } = this.state;
-
+    console.log(storedfields);
     let filteredItems = storedfields[col].filter((item) => {
       console.log(item.cellrow, row + 1);
       return item.cellrow !== row + 1;
@@ -293,25 +320,35 @@ class TaskList extends React.Component {
                                   textAlign: "center",
                                   padding: "2em",
                                   fontSize: "21pt",
+                                  marginTop: "16px",
                                   fontWeight: "bold",
                                   textTransform: "uppercase",
                                   color: "#aaa",
                                   backgroundColor: "#eee",
+                                  height: "206px",
                                 }}
                               >
                                 Drop a Field
                               </p>
                             </div>
                           ) : (
-                            <div className="card" key={index}>
+                            <div
+                              className="card"
+                              key={index}
+                              id={field.id}
+                              draggable
+                              onDragStart={(e) => this.onDragStart(e, index, 1)}
+                              onDragEnd={(e) => this.onDragEnd(e)}
+                              style={{ marginTop: "16px" }}
+                            >
                               <div className="img">
                                 {/* <img src={field.image} alt="box" /> */}
                               </div>
                               <div className="card_right">
                                 <SingleField
-                                  changeState={(e, index) => {
-                                    console.log("value of e", e);
-                                    this.changeChildState(e, index, 0);
+                                  changeState={(evalue, index) => {
+                                    console.log("value of e", evalue);
+                                    this.changeChildState(evalue, index, 0);
                                   }}
                                   field={field}
                                   index={index}
@@ -355,9 +392,12 @@ class TaskList extends React.Component {
                                   padding: "2em",
                                   fontSize: "21pt",
                                   fontWeight: "bold",
+                                  marginTop: "16px",
+
                                   textTransform: "uppercase",
                                   color: "#aaa",
                                   backgroundColor: "#eee",
+                                  height: "206px",
                                 }}
                               >
                                 Drop a Field
@@ -369,17 +409,18 @@ class TaskList extends React.Component {
                               key={index}
                               id={field.id}
                               draggable
-                              onDragStart={(e) => this.onDragStart(e)}
+                              onDragStart={(e) => this.onDragStart(e, index, 2)}
                               onDragEnd={(e) => this.onDragEnd(e)}
+                              style={{ marginTop: "16px" }}
                             >
                               <div className="img">
                                 {/* <img src={field.image} alt="box" /> */}
                               </div>
                               <div className="card_right">
                                 <SingleField
-                                  changeState={(e, index) => {
-                                    console.log("value of e", e);
-                                    this.changeChildState(e, index, 1);
+                                  changeState={(evalue, index) => {
+                                    console.log("value of e", evalue);
+                                    this.changeChildState(evalue, index, 1);
                                   }}
                                   field={field}
                                   index={index}
@@ -422,10 +463,13 @@ class TaskList extends React.Component {
                                   textAlign: "center",
                                   padding: "2em",
                                   fontSize: "21pt",
+                                  marginTop: "16px",
+
                                   fontWeight: "bold",
                                   textTransform: "uppercase",
                                   color: "#aaa",
                                   backgroundColor: "#eee",
+                                  height: "206px",
                                 }}
                               >
                                 Drop a Field
@@ -437,17 +481,18 @@ class TaskList extends React.Component {
                               key={index}
                               id={field.id}
                               draggable
-                              onDragStart={(e) => this.onDragStart(e)}
+                              onDragStart={(e) => this.onDragStart(e, index, 3)}
                               onDragEnd={(e) => this.onDragEnd(e)}
+                              style={{ marginTop: "16px" }}
                             >
                               <div className="img">
                                 {/* <img src={field.image} alt="box" /> */}
                               </div>
                               <div className="card_right">
                                 <SingleField
-                                  changeState={(e, index) => {
-                                    console.log("value of e", e);
-                                    this.changeChildState(e, index, 2);
+                                  changeState={(evalue, index) => {
+                                    console.log("value of e", evalue);
+                                    this.changeChildState(evalue, index, 2);
                                   }}
                                   field={field}
                                   index={index}
